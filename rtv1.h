@@ -6,7 +6,7 @@
 /*   By: vbaron <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/24 19:55:49 by vbaron            #+#    #+#             */
-/*   Updated: 2017/02/20 22:50:31 by vbaron           ###   ########.fr       */
+/*   Updated: 2017/03/07 13:31:48 by vbaron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,8 @@ typedef struct		s_object
 	int				type;
 	t_coo			pos;
 	t_coo			rot;
-	int				r;
-	int				h;
+	double			r;
+	double			h;
 	int				color;
 	void			*next;
 }					t_object;
@@ -39,7 +39,8 @@ typedef struct		s_object
 typedef struct		s_light
 {
 	t_coo			pos;
-	double			coef;
+	double			pow;
+	double			r;
 	int				color;
 	void			*next;
 }					t_light;
@@ -64,12 +65,13 @@ typedef struct		s_env
 	t_coo			fov;
 	t_coo			viewp;
 	t_object		*obj;
-	t_light			lgt;
+	t_light			*lgt;
 }					t_env;
 
 char				*ft_check_syntax(char *line, char *str, int l);
 t_coo				ft_read_coo(char *str, int l);
 int					get_next_line_safe(int fd, char **line);
+t_light				*ft_lstadd_lgt(int fd, char *line, t_light *all_lgt, int l);
 t_object			*ft_lstadd_obj(int fd, char *line, t_object *allobj, int *l);
 t_coo				ft_get_up_left(t_env *env);
 void				raytracer(t_env *env);

@@ -6,7 +6,7 @@
 /*   By: vbaron <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/24 20:07:31 by vbaron            #+#    #+#             */
-/*   Updated: 2017/02/20 21:54:05 by vbaron           ###   ########.fr       */
+/*   Updated: 2017/03/07 13:31:44 by vbaron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,50 +92,17 @@ t_object		*ft_lstadd_obj(int fd, char *line, t_object *allobj)
 	if (obj->type != 0 && get_next_line_safe(fd, &line) == 1)
 	{
 		l++;
-		obj->rot = ft_read_coo(ft_check_syntax(line, "	rotation = (", l), l);
-	}
-	else if (obj->type != 0)
-		ft_error_l("no rotation\n", l);
-	if (obj->type != 1 && get_next_line_safe(fd, &line) == 1)
-	{
-		l++;
-		obj->r = ft_atoi_d(ft_check_syntax(line, "	radius = ", l));
-	}
-	else if (obj->type != 1)
-		ft_error_l("no radius\n", l);
-	if (obj->type > 1 && get_next_line_safe(fd, &line) == 1)
-	{
-		l++;
-		obj->h = ft_atoi_d(ft_check_syntax(line, "	height = ", l));
-	}
-	else if (obj->type > 1)
-		ft_error_l("no height\n", l);
-	l++;
-	if (get_next_line_safe(fd, &line) == 1)
-		obj->color = ft_atoi_16(ft_check_syntax(line, "	color = ", l));
-	else
-		ft_error_l("no color\n", l);
-	l++;
-	if (get_next_line_safe(fd, &line) != 1 || ft_strncmp(line, "}", 1) != 0)
-		ft_error_l("close parameters with a '}'\n", l);
-	l += 2;
-	//
-	if (obj)
-		obj->next = NULL;
-	if (allobj == NULL)
-		return (obj);
-	tmp = allobj;
-	while (tmp->next != NULL)
-		tmp = tmp->next;
-	tmp->next = obj;
-	return (obj);
-}
+	...
+	...
 */
-
+/*
 t_light			*ft_read_lgt_param(int fd, char *line, int *l)
 {
 	t_light		*lgt;
 
+	if (!(lgt = (t_light *)malloc(sizeof(t_light))))
+		ft_error("Malloc error\n");
+	ft_putstr("read lgt\n");//
 	if (get_next_line_safe(fd, &line) != 1)
 		ft_error_l("error\n", *l);
 	if (get_next_line_safe(fd, &line) != 1)
@@ -148,9 +115,10 @@ t_light			*ft_read_lgt_param(int fd, char *line, int *l)
 		ft_error_l("error\n", *l + 4);
 	if (get_next_line_safe(fd, &line) != 1)
 		ft_error_l("error\n", *l + 5);
-	if (get_next_line_safe(fd, &line) != 1)
-		ft_error_l("error\n", *l + 6);
+//	if (get_next_line_safe(fd, &line) != 1)
+//		ft_error_l("error\n", *l + 6);
 	*l += 7;
+	return (lgt);
 }
 
 t_light			*ft_lstadd_lgt(int fd, char *line, t_light *all_lgt, int *l)
@@ -169,8 +137,8 @@ t_light			*ft_lstadd_lgt(int fd, char *line, t_light *all_lgt, int *l)
 	tmp->next = lgt;
 	return (lgt);
 }
-
-t_object		*get_scene(char *file, t_env *env)
+*/
+t_env			*get_scene(char *file, t_env *env)
 {
 	int			fd;
 	int			err;
@@ -197,31 +165,28 @@ t_object		*get_scene(char *file, t_env *env)
 		env->fov = ft_read_coo(ft_check_syntax(line, "camera_fov = (", 4), 4);
 	else
 		ft_error_l("missing camera_fov", 4);
-	if (get_next_line_safe(fd, &line) != 1)
-		ft_error_l("no objects", 5);
 	lgt = NULL;
 	obj = NULL;
 	l = (int *)malloc(sizeof(int));
 	*l = 6;
-	while (get_next_line_safe(fd, &line) != 1)
+	while (get_next_line_safe(fd, &line) == 1)
 	{
 		if (ft_strncmp(line, "light_", 6) == 0)
 		{
-			lgt = ft_lstadd_lgt(fd, line, lgt, l);
-			ft_putstr("lgt \n\n");
+			lgt = ft_lstadd_lgt(fd, line, lgt, *l);
+			*l += 7;
 		}
 		else if (ft_strncmp(line, "object_", 7) == 0)
-		{
 			obj = ft_lstadd_obj(fd, line, obj, l);
-			ft_putstr("obj \n\n");
-		}
-	//add un gnl ici ?
+		else
+			*l += 1;
 	}
-	free(l);
-	ft_putstr(line);
 	close(fd);
+	free(l);
 	free(line);
-	return (obj);//return env avec lgt et obj
+	env->obj = obj;
+	env->lgt = lgt;
+	return (env);
 }
 
 void			init_all(t_env *env)
@@ -246,7 +211,7 @@ int				main(int argc, char **argv)
 		ft_error("Usage : ./rtv1 file\n");
 	if (!(env = (t_env*)malloc(sizeof(t_env))))
 		ft_error("Malloc error\n");
-	env->obj = get_scene(argv[1], env);
+	env = get_scene(argv[1], env);
 	i = 100 / (double)3;
 	init_all(env);
 //	env->viewp = ft_get_up_left(env);

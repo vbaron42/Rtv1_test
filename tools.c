@@ -6,7 +6,7 @@
 /*   By: vbaron <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/20 21:51:47 by vbaron            #+#    #+#             */
-/*   Updated: 2017/02/20 21:53:14 by vbaron           ###   ########.fr       */
+/*   Updated: 2017/03/07 12:05:53 by vbaron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ char			*ft_check_syntax(char *line, char *str, int l)
 		ft_error_l("bad syntax or wrong parameter\n", l);
 	return (ft_strsub(line, ft_strlen(str), ft_strlen(line)));//free ?
 }
-
+/*
 t_coo			ft_get_up_left(t_env *env)
 {
-}
+}*/
